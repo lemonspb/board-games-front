@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Menu, Package2 } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 
 import { Sheet, SheetTrigger, SheetContent } from "@/shared/ui/sheet";
