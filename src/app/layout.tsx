@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { AppHeader } from "@/widgets/app-header";
+import { ThemeProvider } from "@/features/theme/theme-provider";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -26,9 +28,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`dark:bg-white antialiased flex min-h-screen w-full flex-col`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AppHeader />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
