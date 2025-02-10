@@ -10,7 +10,7 @@ export const MainNav = () => {
       <nav className="hidden flex-col gap-0 text-lg font-bold md:flex md:flex-row md:items-center md:gap-5 md:text-base lg:gap-6">
         <Link
           href="/boardgames"
-          className="text-muted-foreground transition-colors text-lg hover:text-foreground w-32"
+          className="text-muted-foreground transition-colors  hover:text-foreground w-32"
         >
           Настольные вечера
         </Link>
