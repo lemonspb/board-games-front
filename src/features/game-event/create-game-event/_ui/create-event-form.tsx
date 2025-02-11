@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
-import { Calendar } from "@/shared/ui/calendar";
+import { DatePicker } from "@/shared/ui/datePicker";
 import {
   Form,
   FormControl,
@@ -101,11 +101,9 @@ export function CreateEventForm() {
               <FormItem>
                 <FormLabel>Дата</FormLabel>
                 <FormControl>
-                  <Calendar
-                    mode="single"
+                  <DatePicker
                     selected={field.value}
                     onSelect={field.onChange}
-                    initialFocus
                   />
                 </FormControl>
               </FormItem>
