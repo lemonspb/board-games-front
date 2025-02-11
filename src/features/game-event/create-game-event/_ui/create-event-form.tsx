@@ -28,9 +28,16 @@ const formSchema = z.object({
 export function CreateEventForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      eventDate: undefined,
+      boardGames: [],
+      count: undefined,
+    },
   });
 
-  const mutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const res = await fetch("http://localhost:3003/events/create", {
         method: "POST",
@@ -45,82 +52,92 @@ export function CreateEventForm() {
       }
     },
     onSuccess: () => {
-      // Invalidate and refetch
+      form.reset();
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    mutation.mutate(values);
+    mutate(values);
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-[600px]">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Мероприятие</FormLabel>
-              <FormControl>
-                <Input placeholder="" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Описание</FormLabel>
-              <FormControl>
-                <Textarea placeholder="" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+    <div className="w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Название</FormLabel>
+                <FormControl>
+                  <Input placeholder="Напишите название" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Описание</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Напишите описание"
+                    {...field}
+                    className="resize-none h-28"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="eventDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>1312</FormLabel>
-              <FormControl>
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={field.onChange}
-                  initialFocus
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="eventDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Дата</FormLabel>
+                <FormControl>
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="count"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Количество людей</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value))}
-                  type="number"
-                  placeholder=""
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button className="mt-10 min-w-40" type="submit">
-          Создать
-        </Button>
-      </form>
-    </Form>
+          <FormField
+            control={form.control}
+            name="count"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Количество людей</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    type="number"
+                    placeholder="Количество людей"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button
+            isLoading={isPending}
+            className="mt-10 min-w-40"
+            type="submit"
+          >
+            Создать
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
