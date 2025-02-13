@@ -13,9 +13,11 @@ import {
   FormItem,
   FormLabel,
 } from "@/shared/ui/form";
-
+import { Game } from "@/features/games/search-game";
 import { useMutation } from "@tanstack/react-query";
 import { Input } from "@/shared/ui/input";
+import { useCallback, useEffect } from "react";
+import { ru } from "date-fns/locale";
 
 const formSchema = z.object({
   title: z.string(),
@@ -25,7 +27,7 @@ const formSchema = z.object({
   count: z.number().optional(),
 });
 
-export function CreateEventForm() {
+export function CreateEventForm({ boardGames }: { boardGames: Game[] }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,8 +39,23 @@ export function CreateEventForm() {
     },
   });
 
+  console.log(boardGames);
+
+  const updateBoardGames = useCallback(() => {
+    form.setValue(
+      "boardGames",
+      (boardGames ?? []).map((game) => Number(game.id)),
+      { shouldValidate: true },
+    );
+  }, [boardGames, form]);
+
+  useEffect(() => {
+    updateBoardGames();
+  }, [updateBoardGames]);
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+      console.log(values);
       const res = await fetch("http://localhost:3003/events/create", {
         method: "POST",
         headers: {
@@ -57,7 +74,6 @@ export function CreateEventForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     mutate(values);
   }
 
@@ -98,12 +114,20 @@ export function CreateEventForm() {
             control={form.control}
             name="eventDate"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Дата</FormLabel>
+              <FormItem className="w-full flex flex-col mt-4">
+                <FormLabel className="">Дата</FormLabel>
                 <FormControl>
                   <DatePicker
+                    locale={ru}
+                    className="w-full"
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    placeholderText="Выберите дату и время"
+                    timeCaption="Время"
+                    dateFormat="MMMM d, yyyy HH:mm aa"
                     selected={field.value}
-                    onSelect={field.onChange}
+                    onChange={field.onChange}
                   />
                 </FormControl>
               </FormItem>

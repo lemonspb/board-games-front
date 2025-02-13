@@ -21,7 +21,7 @@ export function EventCreateWidget() {
     <div className="flex flex-col items-center min-h-screen p-8 sm:p-20 gap-16 font-[family-name:var(--font-geist-sans)] text-4xl">
       <h1 className="text-3xl font-bold">Создание события</h1>
       <div className="flex w-full gap-12">
-        <CreateEventForm />
+        <CreateEventForm boardGames={games} />
         <SearchGame onSelectGame={handleSelectGame} />
         <ListGames games={games} onDelete={handleDeleteGame} />
       </div>
