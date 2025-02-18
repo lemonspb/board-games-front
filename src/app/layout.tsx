@@ -4,6 +4,7 @@ import { AppHeader } from "@/widgets/app-header";
 import { ThemeProvider } from "@/features/theme/theme-provider";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/shared/api/query-client";
+import { Toaster } from "@/shared/ui/toaster";
 import "./globals.css";
 
 // const geistSans = localFont({
@@ -39,6 +40,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryClientProvider client={queryClient}>
+            <Toaster />
             <AppHeader />
             {children}
           </QueryClientProvider>

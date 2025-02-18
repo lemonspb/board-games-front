@@ -1,9 +1,12 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Game } from "../model/types";
 import { useDebounce } from "use-debounce";
 import { Input } from "@/shared/ui/input";
+import { ChevronDown, Loader } from "lucide-react";
+import { Game } from "../model/types";
+import { Label } from "@/shared/ui/label";
 
 // Функция для запроса игр с сервера
 const fetchGames = async (query: string): Promise<Game[]> => {
@@ -12,53 +15,66 @@ const fetchGames = async (query: string): Promise<Game[]> => {
   return res.json();
 };
 
-export function SearchGame({
-  onSelectGame,
-}: {
+interface SearchGameProps {
   onSelectGame: (game: Game) => void;
-}) {
-  const [open, setOpen] = useState(false);
+}
 
+export function SearchGame({ onSelectGame }: SearchGameProps) {
   const [search, setSearch] = useState("");
   const [value] = useDebounce(search, 1000);
+  const [open, setOpen] = useState(false);
 
   // Запрос на сервер с debounce
-  const { data: games } = useQuery({
+  const { data: games = [], isLoading } = useQuery({
     queryKey: ["games", value],
     queryFn: () => fetchGames(value),
-    enabled: !!value, // Запрос отправляется только если есть поисковая строка
+    enabled: Boolean(value),
   });
 
-  //   if (isLoading) return <div>Загрузка...</div>;
-  //   if (isError) return <div>Произошла ошибка</div>;
+  useEffect(() => {
+    setOpen(games.length > 0);
+  }, [games]);
+
+  const handleSelect = useCallback(
+    (game: Game) => {
+      onSelectGame(game);
+      setOpen(false);
+    },
+    [onSelectGame],
+  );
 
   return (
     <div className="w-full">
-      <Input
-        placeholder="Введите название игры"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <div
-        className={`border-l border-r rounded-sm  max-h-48 mt-2 overflow-y-auto bg-slate-50 ${open ? "hidden" : "visible"}`}
-      >
-        {games &&
-          games?.length > 0 &&
-          games?.map((game: Game) => (
+      <Label htmlFor="search-game">Поиск по играм</Label>
+      <div className="relative mt-2">
+        <Input
+          name="search-game"
+          placeholder="Введите название игры"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {isLoading ? (
+          <Loader className="animate-spin absolute right-2 top-2 w-5 h-5 cursor-pointer" />
+        ) : (
+          <ChevronDown
+            onClick={() => setOpen((prev) => !prev)}
+            className={`absolute right-2 top-2 w-5 h-5 cursor-pointer ${games.length > 0 ? "visible" : "hidden"}`}
+          />
+        )}
+      </div>
+      {open && (
+        <div className="border rounded-sm max-h-48 mt-1 overflow-y-auto bg-stone-50">
+          {games.map((game) => (
             <div
-              className="text-sm
-            border-b 
-                w-full h-auto  cursor-pointer hover:bg-slate-100 p-2"
               key={game.id}
-              onClick={() => {
-                onSelectGame(game);
-                setOpen(false);
-              }}
+              className="text-sm border-b border-stone-200 w-full cursor-pointer hover:bg-stone-100 p-2"
+              onClick={() => handleSelect(game)}
             >
               {game.name}
             </div>
           ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

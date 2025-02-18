@@ -18,6 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Input } from "@/shared/ui/input";
 import { useCallback, useEffect } from "react";
 import { ru } from "date-fns/locale";
+import { useToast } from "@/shared/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string(),
@@ -27,7 +28,14 @@ const formSchema = z.object({
   count: z.number().optional(),
 });
 
-export function CreateEventForm({ boardGames }: { boardGames: Game[] }) {
+export function CreateEventForm({
+  boardGames,
+  clearGames,
+}: {
+  boardGames: Game[];
+  clearGames: () => void;
+}) {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,11 +43,9 @@ export function CreateEventForm({ boardGames }: { boardGames: Game[] }) {
       description: "",
       eventDate: undefined,
       boardGames: [],
-      count: undefined,
+      count: NaN,
     },
   });
-
-  console.log(boardGames);
 
   const updateBoardGames = useCallback(() => {
     form.setValue(
@@ -70,6 +76,10 @@ export function CreateEventForm({ boardGames }: { boardGames: Game[] }) {
     },
     onSuccess: () => {
       form.reset();
+      clearGames();
+      toast({
+        description: "Событие успешно создано",
+      });
     },
   });
 
@@ -125,7 +135,7 @@ export function CreateEventForm({ boardGames }: { boardGames: Game[] }) {
                     timeIntervals={15}
                     placeholderText="Выберите дату и время"
                     timeCaption="Время"
-                    dateFormat="MMMM d, yyyy HH:mm aa"
+                    dateFormat="MMMM d, yyyy HH:mm"
                     selected={field.value}
                     onChange={field.onChange}
                   />

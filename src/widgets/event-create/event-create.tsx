@@ -17,13 +17,21 @@ export function EventCreateWidget() {
     setGames((prev) => prev.filter((game) => game.id !== id));
   };
 
+  const handleClearGames = () => {
+    setGames([]);
+  };
+
   return (
     <div className="flex flex-col items-center min-h-screen p-8 sm:p-20 gap-16 font-[family-name:var(--font-geist-sans)] text-4xl">
       <h1 className="text-3xl font-bold">Создание события</h1>
       <div className="flex w-full gap-12">
-        <CreateEventForm boardGames={games} />
-        <SearchGame onSelectGame={handleSelectGame} />
-        <ListGames games={games} onDelete={handleDeleteGame} />
+        <div className="w-6/12">
+          <CreateEventForm boardGames={games} clearGames={handleClearGames} />
+        </div>
+        <div className="w-6/12">
+          <SearchGame onSelectGame={handleSelectGame} />
+          <ListGames games={games} onDelete={handleDeleteGame} />
+        </div>
       </div>
     </div>
   );

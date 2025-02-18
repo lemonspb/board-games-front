@@ -9,7 +9,7 @@ interface ListGamesProps {
 export function ListGames({ games, onDelete }: ListGamesProps) {
   return (
     <div className="mt-11">
-      <h3 className="text-2xl">Добавленные игры</h3>
+      <h3 className="text-xl">Добавленные игры</h3>
       <div>
         {games.map((game) => (
           <div
